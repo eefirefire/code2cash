@@ -1,0 +1,67 @@
+name: TFEX S50 Runner
+
+on:
+  schedule:
+    - cron: "45 4 * * 1-5"    # 11:45 BKK — 2H bar close, entry slot
+    - cron: "15 7 * * 1-5"    # 14:15 BKK — 2H bar close, entry slot
+    - cron: "20 9 * * 1-5"    # 16:20 BKK — pre-close lifecycle check (no entries)
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "auto = manage + entries, manage = lifecycle only"
+        type: choice
+        options: [auto, manage]
+        default: auto
+      dry_run:
+        description: "Print alerts to the log instead of sending; don't save state"
+        type: boolean
+        default: false
+      reset_state:
+        description: "Reset shadow position & lockouts to FLAT"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # commit state/engine_state.json between runs
+
+concurrency:
+  group: tfex-runner
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Reset state
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.reset_state }}
+        run: python engine_worker.py --reset-state
+
+      - name: Run engine
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          ARGS="--mode ${{ inputs.mode || 'auto' }}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then ARGS="$ARGS --dry-run"; fi
+          python engine_worker.py $ARGS
+
+      - name: Persist engine state
+        run: |
+          if [ -n "$(git status --porcelain state/)" ]; then
+            git config user.name  "code2cash-bot"
+            git config user.email "code2cash-bot@users.noreply.github.com"
+            git add state/
+            git commit -m "chore(state): update engine state [skip ci]"
+            git push
+          fi

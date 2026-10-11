@@ -1,0 +1,30 @@
+Parameter,฿800k Tier,฿1.0M Tier
+Capital Tier (THB),800000.00,1000000.00
+Entry / Ref Price,1000.00,1000.00
+Entry Limit (Ask + 0.4),1000.40,1000.40
+Daily ATR14,9.20,9.20
+2H ATR14,5.00,5.00
+Contract Multiplier,200,200
+Commission per Contract RT (THB),80.00,80.00
+Total Contracts,8,10
+T1 Bank Contracts,4,4
+T2A Fixed Runner Contracts,2,3
+T2B Uncapped Runner Contracts,2,3
+Initial Hard Stop Price,995.50,995.50
+Hard Stop Risk Net (THB),-7840.00,-9800.00
+Hard Stop Risk (% equity),0.98,0.98
+Tranche 1 Target Price,1006.00,1006.00
+Tranche 1 Points,6.00,6.00
+Tranche 1 Net Profit (THB),4480.00,4480.00
+Breakeven Ratchet Level,1000.00,1000.00
+Tranche 2A Target Price,1012.00,1012.00
+Tranche 2A Net Profit (THB),4640.00,6960.00
+Chandelier Activation Price,1010.00,1010.00
+Chandelier Stop @ Activation (HH - 1.5 x 2H ATR),1002.50,1002.50
+T2B Net Profit @ +20 pts exit (THB),7840.00,11760.00
+"Total Setup Net PnL, T2B @ +20 pts (THB)",16960.00,23200.00
+T2B Net Profit @ +30 pts exit (THB),11840.00,17760.00
+"Total Setup Net PnL, T2B @ +30 pts (THB)",20960.00,29200.00
+T2B Net Profit @ +40 pts exit (THB),15840.00,23760.00
+"Total Setup Net PnL, T2B @ +40 pts (THB)",24960.00,35200.00
+Scratch Outcome Net (T1 then BE stop) (THB),4160.00,4000.00

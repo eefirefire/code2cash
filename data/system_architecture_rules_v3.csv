@@ -1,0 +1,37 @@
+Section,Parameter,Rule
+A: System Metadata,Target Instrument,TFEX SET50 Index Futures (S50) - quarterly series H/M/U/Z
+A: System Metadata,Direction,Long-Only trend-following swing
+A: System Metadata,Contract Multiplier,฿200 THB / index point
+A: System Metadata,Round-turn Brokerage Commission,฿80 THB / contract
+A: System Metadata,Tick Size,0.1 pts
+A: System Metadata,Capital & Sizing Tier 1,"฿800,000 THB -> 8 Contracts (4 Bank / 2 Fixed Runner / 2 Uncapped Runner)"
+A: System Metadata,Capital & Sizing Tier 2,"฿1,000,000 THB -> 10 Contracts (4 Bank / 3 Fixed Runner / 3 Uncapped Runner)"
+A: System Metadata,Initial Margin (10 cts),"~฿175,000 (effective leverage ~2.0x)"
+A: System Metadata,Execution Slots,11:45 and 14:15 BKK 2H bar closes only (16:15 entry banned)
+Gate 1: Macro Calendar,BOT MPC Blackout,Veto entries 13:00-14:15 BKK on MPC announcement dates
+Gate 1: Macro Calendar,US CPI / FOMC Day,Entries allowed; flatten by 16:40 BKK if Tranche 1 unbanked (no overnight hold)
+Gate 2: Intermarket,US Futures Asian Delta,Veto if ES=F return since 09:00 BKK <= -0.60%
+Gate 2: Intermarket,USD/THB Slope,Veto if THB=X 5-day change > +0.30% (Baht depreciation)
+Gate 3: Daily Regime,Trend Alignment,Daily Close > EMA(20) AND Daily Close > SMA(200)
+Gate 3: Daily Regime,EMA20 Slope,EMA20[today] - EMA20[today-3] > +0.80 pts
+Gate 3: Daily Regime,Extension Ceiling,(Close - EMA20) <= 2.5 x Daily ATR(14)
+Gate 3: Daily Regime,Trend Strength,Daily ADX(14) > 20.0
+Gate 4: Mega-Cap Breadth,Heavyweights,"DELTA, PTT, PTTEP, BDMS, CPALL (~35-40% index weight)"
+Gate 4: Mega-Cap Breadth,Requirement,>= 3 of 5 net positive (> 0.0%) on the session
+Gate 5: 2H Wave Trigger,Pullback,2H Low <= 2H EMA(20)
+Gate 5: 2H Wave Trigger,Reclaim,2H Close > 2H EMA(20)
+Gate 5: 2H Wave Trigger,Lower Wick Absorption,"Min(Open, Close) - Low > 0.20 pts"
+Gate 5: 2H Wave Trigger,Relative Volume,Volume > 20-period Volume SMA AND session-slot RVol >= 1.15
+Gate 5: 2H Wave Trigger,Bollinger Expansion,"2H Bandwidth(20, 2) > 20-period Bandwidth SMA"
+Bracket,Initial Hard Stop,"Entry - 4.5 pts on all contracts (max risk -฿9,800 net on 10 cts < 1% equity)"
+Bracket,Tranche 1 Bank,"Entry + clamp(1.2 x 2H ATR, 5.0, 8.0) pts on 4 contracts; on fill ratchet all runners to Entry (breakeven)"
+Bracket,Tranche 2A Fixed Runner,Entry + 12.0 pts limit on 3 contracts
+Bracket,Tranche 2B Uncapped Runner,"Once gain >= +10.0 pts: Chandelier Stop = Max(current stop, Highest High - 1.5 x 2H ATR14) on 3 contracts"
+Exits,Time-Decay Stagnation,Flatten at close if >= 6 2H bars held without Tranche 1 fill
+Exits,Friday Weekend Gap Rule,Flatten all before 16:45 BKK Friday if Tranche 1 unbanked
+Risk,Daily Lockout,2 failed stop-outs (-9.0 pts) -> halt until 08:30 next day
+Risk,Weekly Lockout,3 failed stop-outs (-13.5 pts) -> halt until Monday 08:30
+Risk,Rollover,Roll 7-10 trading days before expiry (engine rolls at 8) when next series volume >= 70% of current
+ATR Sizing Matrix,Daily ATR <= 11.0,10 contracts (4 Bank / 3 Fixed / 3 Uncapped)
+ATR Sizing Matrix,11.0 < Daily ATR <= 15.0,7 contracts (3 Bank / 2 Fixed / 2 Uncapped)
+ATR Sizing Matrix,Daily ATR > 15.0,5 contracts (2 Bank / 1 Fixed / 2 Uncapped)
